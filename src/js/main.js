@@ -19,6 +19,9 @@ c.addEventListener("mousedown", (e)=>{
     isPressing = true;
 });
 c.addEventListener("mousemove", (e)=>{
+    if (isShift) {
+        return;
+    }
     if (isPressing) {
         paths[paths.length-1].push([(e.clientX-rect.left)*scaleX, (e.clientY-rect.top)*scaleY])
         ctx.lineTo(paths[paths.length-1][paths[paths.length-1].length-1][0], paths[paths.length-1][paths[paths.length-1].length-1][1]);
@@ -60,9 +63,51 @@ document.getElementById("back-one").addEventListener("click", (e)=>{
     }
     ctx.strokeStyle = document.getElementById("lineColor").value;
 });
+var isShift = false
 document.addEventListener('keydown', function(event) {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
     event.preventDefault(); 
     document.getElementById("back-one").click();
   }
+  isShift = event.key === "Shift"
+});
+document.addEventListener('keyup', (event)=>{
+  isShift = event.key !== "Shift"
+});
+document.getElementById("print").addEventListener('click', () => {
+    const dataUrl = c.toDataURL('image/png');
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Print Canvas</title>
+            <style>
+                /* Reset margins for screen display */
+                html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+                img { width: 100%; display: block; height: auto; }
+                
+                /* Force full-bleed printing across all browsers */
+                @media print {
+                    @page { margin: 0; size: auto; }
+                    html, body { margin: 0; padding: 0; width: 100%; }
+                    img { width: 100% !important; height: auto !important; display: block !important; }
+                }
+            </style>
+        </head>
+        <body>
+            <img id="printImg" src="${dataUrl}" />
+            <script>
+                const img = document.getElementById('printImg');
+                img.onload = () => {
+                    window.focus();
+                    setTimeout(() => {
+                        window.print();
+                        window.close();
+                    }, 250); // Prevents the infinite spinning loader bug
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
 });
