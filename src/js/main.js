@@ -49,7 +49,8 @@ document.getElementById("reset").addEventListener("click", reset);
 
 document.getElementById("back-one").addEventListener("click", (e)=>{
     reset();
-    paths.pop()
+    paths.pop();
+    colors.pop();
     var i = 1;
     for (let path of paths) {
         ctx.strokeStyle = colors[i];
