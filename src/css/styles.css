@@ -2,7 +2,5 @@ canvas {
     width: 90vh;
     height: 90vh;
     border-width: 2px;
-    border-style: solid;
-
-    
+    border-style: solid;   
 }
