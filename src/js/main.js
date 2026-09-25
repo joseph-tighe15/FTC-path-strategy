@@ -45,7 +45,11 @@ function reset() {
     ctx.fill();
     ctx.drawImage(img, 0, 0);
 }
-document.getElementById("reset").addEventListener("click", reset);
+document.getElementById("reset").addEventListener("click", (e)=>{
+    reset();
+    paths = []
+    colors = []
+});
 
 document.getElementById("back-one").addEventListener("click", (e)=>{
     reset();
@@ -70,10 +74,14 @@ document.addEventListener('keydown', function(event) {
     event.preventDefault(); 
     document.getElementById("back-one").click();
   }
-  isShift = event.key === "Shift"
+  if (event.key === "Shift") {
+    isShift = true;
+  }
 });
 document.addEventListener('keyup', (event)=>{
-  isShift = event.key !== "Shift"
+  if (event.key === "Shift") {
+    isShift = false;
+  }
 });
 document.getElementById("print").addEventListener('click', () => {
     const dataUrl = c.toDataURL('image/png');
@@ -81,7 +89,7 @@ document.getElementById("print").addEventListener('click', () => {
     printWindow.document.write(`
         <html>
         <head>
-            <title>Print Canvas</title>
+            <title>My_Path</title>
             <style>
                 /* Reset margins for screen display */
                 html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
