@@ -1,21 +1,26 @@
 var c = document.getElementById("main");
 var ctx = c.getContext("2d");
 const img = new Image(); // Create new img element
+class line {
+    constructor (line, color) {
+        this.line = line
+        this.color = color
+    }
+
+}
 img.addEventListener("load", () => {
   ctx.drawImage(img, 0, 0);
 });
 img.src = "src/assets/field.png"; // Set source path
 var paths = []
-colors = []
 const rect = c.getBoundingClientRect();
 const scaleX = c.width / rect.width;
 const scaleY = c.height / rect.height;
 var isPressing = false;
 c.addEventListener("mousedown", (e)=>{
-    colors.push(ctx.strokeStyle);
-    paths.push([[(e.clientX-rect.left)*scaleX, (e.clientY-rect.top)*scaleY]])
+    paths.push(new line([[(e.clientX-rect.left)*scaleX, (e.clientY-rect.top)*scaleY]], ctx.strokeStyle))
     ctx.beginPath();
-    ctx.moveTo(paths[paths.length-1][0][0], paths[paths.length-1][0][1]);
+    ctx.moveTo(paths[paths.length-1].line[0][0], paths[paths.length-1].line[0][1]);
     isPressing = true;
 });
 c.addEventListener("mousemove", (e)=>{
@@ -23,16 +28,17 @@ c.addEventListener("mousemove", (e)=>{
         return;
     }
     if (isPressing) {
-        paths[paths.length-1].push([(e.clientX-rect.left)*scaleX, (e.clientY-rect.top)*scaleY])
-        ctx.lineTo(paths[paths.length-1][paths[paths.length-1].length-1][0], paths[paths.length-1][paths[paths.length-1].length-1][1]);
+        paths[paths.length-1].line.push([(e.clientX-rect.left)*scaleX, (e.clientY-rect.top)*scaleY])
+        ctx.lineTo(paths[paths.length-1].line[paths[paths.length-1].line.length-1][0], paths[paths.length-1].line[paths[paths.length-1].line.length-1][1]);
         ctx.stroke();
     }
 });
 c.addEventListener("mouseup", (e)=>{
     isPressing = false;
-    paths[paths.length-1].push([(e.clientX-rect.left)*scaleX, (e.clientY-rect.top)*scaleY])
-    ctx.lineTo(paths[paths.length-1][paths[paths.length-1].length-1][0], paths[paths.length-1][paths[paths.length-1].length-1][1]);
+    paths[paths.length-1].line.push([(e.clientX-rect.left)*scaleX, (e.clientY-rect.top)*scaleY])
+    ctx.lineTo(paths[paths.length-1].line[paths[paths.length-1].line.length-1][0], paths[paths.length-1].line[paths[paths.length-1].line.length-1][1]);
     ctx.stroke();
+    paths[paths.length-1].color = ctx.strokeStyle
 });
 ctx.strokeStyle = "#ff00ff"
 document.getElementById("lineColor").value = "#ff00ff"
@@ -48,23 +54,20 @@ function reset() {
 document.getElementById("reset").addEventListener("click", (e)=>{
     reset();
     paths = []
-    colors = []
 });
 
 document.getElementById("back-one").addEventListener("click", (e)=>{
     reset();
     paths.pop();
-    colors.pop();
-    var i = 1;
-    for (let path of paths) {
-        ctx.strokeStyle = colors[i];
+    for (let line of paths) {
+        path = line.line
+        ctx.strokeStyle = line.color;
         ctx.beginPath();
         ctx.moveTo(path[0][0], path[0][1]);
         for (let dot of path) {
             ctx.lineTo(dot[0], dot[1]);
             ctx.stroke();
         }
-        i++;
     }
     ctx.strokeStyle = document.getElementById("lineColor").value;
 });
